@@ -40,6 +40,11 @@ public class SaleItem : BaseEntity
     public bool IsCancelled { get; private set; }
 
     /// <summary>
+    /// The unique identifier of the sale to which this item belongs.
+    /// </summary>
+    public Guid SaleId { get; set; }
+
+    /// <summary>
     /// Applies discount rules to the item based on the quantity purchased.
     /// </summary>
     public void ApplyDiscount()

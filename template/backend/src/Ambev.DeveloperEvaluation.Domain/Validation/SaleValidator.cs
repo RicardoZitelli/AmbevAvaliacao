@@ -11,26 +11,30 @@ public class SaleValidator : AbstractValidator<Sale>
     public SaleValidator()
     {
         RuleFor(sale => sale.SaleNumber)
-            .NotEmpty().WithMessage("Sale number cannot be empty.")
+            .NotEmpty().WithMessage("Sale number is required.")
             .MaximumLength(50).WithMessage("Sale number cannot exceed 50 characters.");
 
-        RuleFor(sale => sale.SaleDate)
-            .LessThanOrEqualTo(DateTime.UtcNow)
-            .WithMessage("Sale date cannot be in the future.");
-
         RuleFor(sale => sale.Customer)
-            .NotEmpty().WithMessage("Customer name cannot be empty.")
+            .NotEmpty().WithMessage("Customer is required.")
             .MaximumLength(100).WithMessage("Customer name cannot exceed 100 characters.");
 
         RuleFor(sale => sale.Branch)
-            .NotEmpty().WithMessage("Branch cannot be empty.")
-            .MaximumLength(50).WithMessage("Branch cannot exceed 50 characters.");
+            .NotEmpty().WithMessage("Branch is required.")
+            .MaximumLength(50).WithMessage("Branch name cannot exceed 50 characters.");
 
-        RuleFor(sale => sale.Items)
-            .NotEmpty().WithMessage("A sale must have at least one item.")
-            .ForEach(item => item.SetValidator(new SaleItemValidator()));
+        RuleFor(sale => sale.CreatedBy)
+            .NotEmpty().WithMessage("CreatedBy is required.")
+            .MaximumLength(100).WithMessage("CreatedBy cannot exceed 100 characters.");
 
-        RuleFor(sale => sale.TotalAmount)
-            .GreaterThanOrEqualTo(0).WithMessage("Total amount cannot be negative.");
+        RuleFor(sale => sale.CreatedAt)
+            .NotEmpty().WithMessage("CreatedAt is required.")
+            .LessThanOrEqualTo(DateTime.UtcNow).WithMessage("CreatedAt cannot be in the future.");
+
+        RuleFor(sale => sale.UpdatedBy)
+            .MaximumLength(100).WithMessage("UpdatedBy cannot exceed 100 characters.");
+
+        RuleFor(sale => sale.UpdatedAt)
+            .LessThanOrEqualTo(DateTime.UtcNow).WithMessage("UpdatedAt cannot be in the future.");
     }
 }
+

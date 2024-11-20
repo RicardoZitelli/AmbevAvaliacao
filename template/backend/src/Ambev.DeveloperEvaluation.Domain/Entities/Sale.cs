@@ -43,22 +43,56 @@ public class Sale : BaseEntity
     /// <summary>
     /// Gets the list of items included in the sale.
     /// </summary>
-    public List<SaleItem> Items { get; set; } = new();
+    public List<SaleItem> Items { get; set; } = [];
 
     /// <summary>
-    /// Initializes a new instance of the Sale class and sets the sale date to the current UTC time.
+    /// Gets the date and time when the sale was created.
     /// </summary>
-    public Sale()
+    public DateTime CreatedAt { get; private set; }
+
+    /// <summary>
+    /// Gets the user who created the sale.
+    /// </summary>
+    public string CreatedBy { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the date and time when the sale was last updated.
+    /// </summary>
+    public DateTime? UpdatedAt { get; private set; }
+
+    /// <summary>
+    /// Gets or sets the user who last updated the sale.
+    /// </summary>
+    public string? UpdatedBy { get; private set; }
+
+    /// <summary>
+    /// Initializes a new instance of the Sale class and sets the creation metadata.
+    /// </summary>
+    /// <param name="createdBy">The user who created the sale.</param>
+    public Sale(string createdBy)
     {
         SaleDate = DateTime.UtcNow;
+        CreatedAt = DateTime.UtcNow;
+        CreatedBy = !string.IsNullOrWhiteSpace(createdBy) ? createdBy : throw new ArgumentNullException(nameof(createdBy), "CreatedBy cannot be null or empty.");
+    }
+
+    /// <summary>
+    /// Updates the sale metadata.
+    /// </summary>
+    /// <param name="updatedBy">The user who updated the sale.</param>
+    public void UpdateSale(string updatedBy)
+    {
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedBy = !string.IsNullOrWhiteSpace(updatedBy) ? updatedBy : throw new ArgumentNullException(nameof(updatedBy), "UpdatedBy cannot be null or empty.");
     }
 
     /// <summary>
     /// Cancels the sale, marking it as inactive.
     /// </summary>
-    public void CancelSale()
+    public void CancelSale(string updatedBy)
     {
         IsCancelled = true;
+        UpdateSale(updatedBy);
     }
 
     /// <summary>
@@ -74,23 +108,25 @@ public class Sale : BaseEntity
     /// Adds an item to the sale and recalculates the total amount.
     /// </summary>
     /// <param name="item">The item to add.</param>
-    public void AddItem(SaleItem item)
+    public void AddItem(SaleItem item, string updatedBy)
     {
         Items.Add(item);
         CalculateTotalAmount();
+        UpdateSale(updatedBy);
     }
 
     /// <summary>
     /// Cancels a specific item in the sale and recalculates the total amount.
     /// </summary>
     /// <param name="itemId">The unique identifier of the item to cancel.</param>
-    public void CancelItem(Guid itemId)
+    public void CancelItem(Guid itemId, string updatedBy)
     {
         var item = Items.FirstOrDefault(i => i.Id == itemId);
         if (item != null)
         {
             item.Cancel();
             CalculateTotalAmount();
+            UpdateSale(updatedBy);
         }
     }
 
@@ -110,7 +146,7 @@ public class Sale : BaseEntity
         return new ValidationResultDetail
         {
             IsValid = result.IsValid,
-            Errors = result.Errors.Select(e => (ValidationErrorDetail) e)            
+            Errors = result.Errors.Select(e => (ValidationErrorDetail)e)
         };
     }
 }
