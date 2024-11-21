@@ -97,9 +97,11 @@ public class Sale : BaseEntity
 
     /// <summary>
     /// Calculates the total amount for the sale based on the active items.
+    /// Ensures that each item's discount and total are recalculated before summing.
     /// </summary>
     public void CalculateTotalAmount()
     {
+        Items.ForEach(x => x.ApplyDiscount());        
         TotalAmount = Items.Where(item => !item.IsCancelled)
                            .Sum(item => item.TotalAmount);
     }
