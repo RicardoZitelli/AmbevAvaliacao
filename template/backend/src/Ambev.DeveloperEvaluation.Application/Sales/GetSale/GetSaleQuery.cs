@@ -2,4 +2,4 @@
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 
-public record GetSaleQuery(Guid SaleId) : IRequest<GetSaleResponse>;
+public record GetSaleQuery(Guid SaleId) : IRequest<GetSaleResult>;
