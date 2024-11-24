@@ -20,18 +20,20 @@ public class GetSaleHandler : IRequestHandler<GetSaleQuery, GetSaleResult>
 
         return new GetSaleResult
         {
-            SaleId = sale.Id,
+            Id = sale.Id,
             SaleNumber = sale.SaleNumber,
             SaleDate = sale.SaleDate,
             Customer = sale.Customer,
             Branch = sale.Branch,
-            Items = sale.Items.Select(i => new GetSaleItemResponse
+            Items = sale.Items.Select(item => new GetSaleItemResponse
             {
-                Product = i.Product,
-                Quantity = i.Quantity,
-                UnitPrice = i.UnitPrice,
-                Discount = i.Discount,
-                TotalAmount = i.TotalAmount
+                Id = item.Id,
+                Product = item.Product,
+                Quantity = item.Quantity,
+                UnitPrice = item.UnitPrice,
+                Discount = item.Discount,
+                TotalAmount = item.TotalAmount,            
+                SaleId = item.SaleId
             }).ToList()
         };
     }

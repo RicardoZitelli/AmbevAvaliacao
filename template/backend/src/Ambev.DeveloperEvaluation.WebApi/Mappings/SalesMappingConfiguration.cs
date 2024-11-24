@@ -19,6 +19,7 @@ public class SalesMappingConfiguration : Profile
 {
     public SalesMappingConfiguration()
     {
+        #region Requests
         CreateMap<CreateSaleRequest, CreateSaleCommand>();
         CreateMap<SaleItemRequest, SaleItemCommand>();
 
@@ -29,5 +30,18 @@ public class SalesMappingConfiguration : Profile
         CreateMap<ListSalesRequest, ListSaleQuery>();
 
         CreateMap<UpdateSaleRequest, UpdateSaleCommand>();
-    }   
+        #endregion
+
+        #region Responses
+        CreateMap<CreateSaleResult, CreateSaleResponse>();
+        CreateMap<SaleItemResult, SaleItemResponse>();
+
+        CreateMap<UpdateSaleResult, UpdateSaleResponse>();
+
+        CreateMap<GetSaleResult, GetSaleResponse>();
+
+        CreateMap<ListSalesResult, ListSaleResponse>();
+        CreateMap<ListSaleItemResult, ListSaleItemResponse>();
+        #endregion
+    }
 }

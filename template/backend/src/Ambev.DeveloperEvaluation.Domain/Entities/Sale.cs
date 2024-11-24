@@ -1,6 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Validation;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
@@ -53,7 +54,7 @@ public class Sale : BaseEntity
     /// <summary>
     /// Gets the user who created the sale.
     /// </summary>
-    public string CreatedBy { get; private set; } = string.Empty;
+    public string CreatedBy { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the date and time when the sale was last updated.
@@ -67,20 +68,28 @@ public class Sale : BaseEntity
 
     /// <summary>
     /// Initializes a new instance of the Sale class and sets the creation metadata.
-    /// </summary>
-    /// <param name="createdBy">The user who created the sale.</param>
-    public Sale(string createdBy)
+    /// </summary>        
+
+    public Sale()
     {
+    }
+
+    /// <summary>
+    /// Sets the sale creation date
+    /// </summary>
+    /// <param name="createdBy"></param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public void CreateSaleDate()
+    {        
         SaleDate = DateTime.UtcNow;
-        CreatedAt = DateTime.UtcNow;
-        CreatedBy = !string.IsNullOrWhiteSpace(createdBy) ? createdBy : throw new ArgumentNullException(nameof(createdBy), "CreatedBy cannot be null or empty.");
+        CreatedAt = DateTime.UtcNow;        
     }
 
     /// <summary>
     /// Updates the sale metadata.
     /// </summary>
     /// <param name="updatedBy">The user who updated the sale.</param>
-    public void UpdateSale(string updatedBy)
+    private void UpdateSaleDate(string updatedBy)
     {
         UpdatedAt = DateTime.UtcNow;
         UpdatedBy = !string.IsNullOrWhiteSpace(updatedBy) ? updatedBy : throw new ArgumentNullException(nameof(updatedBy), "UpdatedBy cannot be null or empty.");
@@ -89,10 +98,10 @@ public class Sale : BaseEntity
     /// <summary>
     /// Cancels the sale, marking it as inactive.
     /// </summary>
-    public void CancelSale(string updatedBy)
+    public void CancelSale(string updatedBy, bool isCancelled)
     {
-        IsCancelled = true;
-        UpdateSale(updatedBy);
+        IsCancelled = isCancelled;
+        UpdateSaleDate(updatedBy);
     }
 
     /// <summary>
@@ -114,7 +123,7 @@ public class Sale : BaseEntity
     {
         Items.Add(item);
         CalculateTotalAmount();
-        UpdateSale(updatedBy);
+        UpdateSaleDate(updatedBy);
     }
 
     /// <summary>
@@ -128,7 +137,7 @@ public class Sale : BaseEntity
         {
             item.Cancel();
             CalculateTotalAmount();
-            UpdateSale(updatedBy);
+            UpdateSaleDate(updatedBy);
         }
     }
 

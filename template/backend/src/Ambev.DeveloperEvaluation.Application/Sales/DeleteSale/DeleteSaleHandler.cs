@@ -34,13 +34,13 @@ public class DeleteSaleHandler : IRequestHandler<DeleteSaleCommand, DeleteSaleRe
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
              
-        var success = await _saleRepository.DeleteAsync(request.SaleId, cancellationToken);
+        var success = await _saleRepository.DeleteAsync(request.Id, cancellationToken);
         if (!success)
         {
             return new DeleteSaleResponse
             {
                 Success = false,
-                Message = $"Sale with ID {request.SaleId} not found."
+                Message = $"Sale with ID {request.Id} not found."
             };
         }
 

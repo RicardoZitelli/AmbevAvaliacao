@@ -1,4 +1,6 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Repositories;
+﻿using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
+using FluentValidation;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
@@ -6,7 +8,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 /// <summary>
 /// Handler for processing UpdateSaleCommand requests.
 /// </summary>
-public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, bool>
+public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleResult>
 {
     private readonly ISaleRepository _saleRepository;
 
@@ -25,18 +27,47 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, bool>
     /// <param name="request">The UpdateSaleCommand request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>True if the update was successful.</returns>
-    public async Task<bool> Handle(UpdateSaleCommand request, CancellationToken cancellationToken)
+    public async Task<UpdateSaleResult> Handle(UpdateSaleCommand request, CancellationToken cancellationToken)
     {
-        var sale = await _saleRepository.GetByIdAsync(request.SaleId, cancellationToken);
-        if (sale == null)
-            throw new KeyNotFoundException($"Sale with ID {request.SaleId} not found");
+        var validator = new UpdateSaleValidator();
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
+        if (!validationResult.IsValid)
+        {
+            throw new ValidationException(validationResult.Errors);
+        }
+
+        var sale = await _saleRepository.GetByIdAsync(request.Id, cancellationToken) 
+            ?? throw new KeyNotFoundException($"Sale with ID {request.Id} not found");
+
+        sale.SaleNumber = request.SaleNumber;
         sale.Customer = request.Customer;
         sale.Branch = request.Branch;
-        sale.UpdateSale(request.UpdatedBy);
+        sale.CancelSale(request.UpdatedBy, request.IsCancelled);        
 
         await _saleRepository.UpdateAsync(sale, cancellationToken);
 
-        return true;
+        return new UpdateSaleResult
+        {
+            Id = sale.Id,
+            SaleNumber = sale.SaleNumber,
+            SaleDate = sale.SaleDate,
+            Customer = sale.Customer,
+            Branch = sale.Branch,
+            TotalAmount = sale.TotalAmount,
+            IsCancelled = sale.IsCancelled,
+            Items = sale.Items.Select(item => new SaleItemResult
+            {
+                Id = item.Id,
+                Product = item.Product,
+                Quantity = item.Quantity,
+                UnitPrice = item.UnitPrice,
+                Discount = item.Discount,
+                TotalAmount = item.TotalAmount,
+                IsCancelled = item.IsCancelled,
+                SaleId = item.SaleId
+                
+            }).ToList()
+        };        
     }
 }

@@ -21,7 +21,9 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sale>
             .HasMaxLength(50);
 
         builder.Property(s => s.SaleDate)
-            .IsRequired();
+            .IsRequired()
+            .HasColumnType("timestamp with time zone")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP"); ;
 
         builder.Property(s => s.Customer)
             .IsRequired()
@@ -40,15 +42,16 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sale>
 
         builder.Property(s => s.CreatedAt)
             .IsRequired()
-            .HasColumnType("timestamp")
+            .HasColumnType("timestamp with time zone")
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         builder.Property(s => s.CreatedBy)
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(s => s.UpdatedAt)
-            .HasColumnType("timestamp");
+        builder.Property(s => s.UpdatedAt)            
+            .HasColumnType("timestamp with time zone")
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         builder.Property(s => s.UpdatedBy)
             .HasMaxLength(100);

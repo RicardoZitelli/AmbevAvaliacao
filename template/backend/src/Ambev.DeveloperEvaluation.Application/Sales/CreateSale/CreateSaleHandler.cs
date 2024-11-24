@@ -37,25 +37,49 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
             throw new ValidationException(validationResult.Errors);
         }
         
-        var sale = new Sale(request.CreatedBy)
+        var sale = new Sale()
         {
-            SaleNumber = request.SaleNumber,
-            SaleDate = request.SaleDate,
+            Id = Guid.NewGuid(),
+            SaleNumber = request.SaleNumber,            
             Customer = request.Customer,
-            Branch = request.Branch,
+            Branch = request.Branch,            
+            SaleDate = DateTime.UtcNow,
+            CreatedBy = request.CreatedBy,                
             Items = request.Items.Select(i => new SaleItem
             {
+                Id = Guid.NewGuid(),
                 Product = i.Product,
                 Quantity = i.Quantity,
-                UnitPrice = i.UnitPrice
+                UnitPrice = i.UnitPrice,                
             }).ToList()
         };
-                
+
+        sale.CreateSaleDate();                
         sale.Items.ForEach(item => item.ApplyDiscount());
         sale.CalculateTotalAmount();
                 
         await _saleRepository.CreateAsync(sale, cancellationToken);
-                
-        return new CreateSaleResult { SaleId = sale.Id };
+
+        return new CreateSaleResult
+        {
+            Id = sale.Id,
+            SaleNumber = sale.SaleNumber,            
+            Customer = sale.Customer,
+            Branch = sale.Branch,
+            SaleDate = sale.SaleDate,
+            TotalAmount = sale.TotalAmount,
+            IsCancelled = sale.IsCancelled,
+            Items = sale.Items.Select(item => new SaleItemResult
+            {
+                Id = item.Id,
+                Product = item.Product,
+                Quantity = item.Quantity,
+                UnitPrice = item.UnitPrice,
+                Discount = item.Discount,
+                TotalAmount = item.TotalAmount,
+                SaleId = item.SaleId
+            }).ToList()
+        };
+
     }
 }

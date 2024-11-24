@@ -6,7 +6,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.ListSale;
 /// <summary>
 /// Handler for processing SaleListQuery requests.
 /// </summary>
-public class ListSaleHandler : IRequestHandler<ListSaleQuery, ListSaleResponse>
+public class ListSaleHandler : IRequestHandler<ListSaleQuery, List<ListSalesResult>>
 {
     private readonly ISaleRepository _saleRepository;
 
@@ -25,23 +25,31 @@ public class ListSaleHandler : IRequestHandler<ListSaleQuery, ListSaleResponse>
     /// <param name="request">The SaleListQuery request.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A SaleListResponse containing the list of sales.</returns>
-    public async Task<ListSaleResponse> Handle(ListSaleQuery request, CancellationToken cancellationToken)
+    public async Task<List<ListSalesResult>> Handle(ListSaleQuery request, CancellationToken cancellationToken)
     {
         var sales = await _saleRepository.GetAllAsync(cancellationToken);
 
-        var response = new ListSaleResponse
+        var response = sales.Select(sale => new ListSalesResult
         {
-            Sales = sales.Select(sale => new ListSaleItemResponse
+            Id = sale.Id,
+            SaleNumber = sale.SaleNumber,
+            SaleDate = sale.SaleDate,
+            Customer = sale.Customer,
+            Branch = sale.Branch,
+            TotalAmount = sale.TotalAmount,
+            IsCancelled = sale.IsCancelled,            
+            Items = sale.Items?.Select(item => new ListSaleItemResult
             {
-                SaleId = sale.Id,
-                SaleNumber = sale.SaleNumber,
-                SaleDate = sale.SaleDate,
-                Customer = sale.Customer,
-                Branch = sale.Branch,
-                TotalAmount = sale.TotalAmount,
-                IsCancelled = sale.IsCancelled
-            }).ToList()
-        };
+                Id = item.Id,
+                Product = item.Product,
+                Quantity = item.Quantity,
+                UnitPrice = item.UnitPrice,
+                Discount = item.Discount,
+                TotalAmount = item.TotalAmount,
+                IsCancelled = item.IsCancelled,
+                SaleId = item.SaleId
+            }).ToList() ?? []
+        }).ToList();
 
         return response;
     }

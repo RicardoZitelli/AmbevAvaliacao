@@ -1,9 +1,11 @@
-﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
+﻿using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
+
+namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 
 /// <summary>
-/// Response model for getting a sale.
+/// Result model for the UpdateSale operation.
 /// </summary>
-public class GetSaleResponse
+public class UpdateSaleResult
 {
     /// <summary>
     /// The unique identifier of the sale.
@@ -43,5 +45,5 @@ public class GetSaleResponse
     /// <summary>
     /// The list of items in the sale.
     /// </summary>
-    public List<SaleItemResponse> Items { get; set; } = [];
+    public List<SaleItemResult> Items { get; set; } = new();
 }

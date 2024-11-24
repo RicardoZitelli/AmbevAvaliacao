@@ -1,42 +1,45 @@
-﻿namespace Ambev.DeveloperEvaluation.Application.Sales.GetSale;
-
-/// <summary>
-/// Represents an item in the GetSaleResponse.
+﻿/// <summary>
+/// Response model for a single sale item in the list.
 /// </summary>
-public class GetSaleItemResponse
+public class ListSaleItemResult
 {
     /// <summary>
-    /// Gets or sets the Id of the item.
+    /// Unique identifier of the sale item.
     /// </summary>
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the product name of the item.
+    /// The product name.
     /// </summary>
     public string Product { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the quantity of the item.
+    /// Quantity of the product sold.
     /// </summary>
     public int Quantity { get; set; }
 
     /// <summary>
-    /// Gets or sets the unit price of the item.
+    /// Unit price of the product.
     /// </summary>
     public decimal UnitPrice { get; set; }
 
     /// <summary>
-    /// Gets or sets the discount applied to the item.
+    /// Discount applied to the product.
     /// </summary>
     public decimal Discount { get; set; }
 
     /// <summary>
-    /// Gets or sets the total amount for the item.
+    /// Total amount for this sale item.
     /// </summary>
     public decimal TotalAmount { get; set; }
 
     /// <summary>
-    /// Gets or sets the Sale Id of the item.
+    /// Indicates whether the item is cancelled.
+    /// </summary>
+    public bool IsCancelled { get; set; }
+
+    /// <summary>
+    /// The ID of the sale to which this item belongs.
     /// </summary>
     public Guid SaleId { get; set; }
 }

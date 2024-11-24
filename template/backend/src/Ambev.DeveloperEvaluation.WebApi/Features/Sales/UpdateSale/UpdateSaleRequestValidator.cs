@@ -1,5 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 
@@ -13,9 +12,13 @@ public class UpdateSaleRequestValidator : AbstractValidator<UpdateSaleRequest>
     /// </summary>
     public UpdateSaleRequestValidator()
     {
+        RuleFor(sale => sale.Id)
+            .NotEmpty().WithMessage("Sale ID is required.")
+            .Must(value => Guid.TryParse(value.ToString(), out _)).WithMessage("Sale ID must be a valid GUID.");
+
         RuleFor(sale => sale.SaleNumber)
-            .NotEmpty().WithMessage("Sale number is required.")
-            .Length(1, 50).WithMessage("Sale number must be between 1 and 50 characters.");
+            .NotEmpty().WithMessage("SaleNumber is required.")
+            .Length(1, 100).WithMessage("Sale Number must be between 1 and 100 characters.");
 
         RuleFor(sale => sale.Customer)
             .NotEmpty().WithMessage("Customer is required.")
@@ -25,8 +28,12 @@ public class UpdateSaleRequestValidator : AbstractValidator<UpdateSaleRequest>
             .NotEmpty().WithMessage("Branch is required.")
             .Length(3, 50).WithMessage("Branch name must be between 3 and 50 characters.");
 
-        RuleFor(sale => sale.Items)
-            .NotEmpty().WithMessage("At least one sale item is required.")
-            .ForEach(item => item.SetValidator(new SaleItemRequestValidator()));
+        RuleFor(sale => sale.IsCancelled)
+            .NotNull().WithMessage("IsCancelled is required.")
+            .Must(value => value == true || value == false).WithMessage("IsCancelled must be a valid boolean.");
+
+        RuleFor(sale => sale.UpdatedBy)
+            .NotEmpty().WithMessage("Update By is required.")
+            .Length(3, 50).WithMessage("Update By name must be between 3 and 50 characters.");
     }
 }

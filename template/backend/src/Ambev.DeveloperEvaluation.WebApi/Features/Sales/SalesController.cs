@@ -12,8 +12,6 @@ using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 using Ambev.DeveloperEvaluation.Application.Sales.ListSale;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
-using Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
-using Ambev.DeveloperEvaluation.WebApi.Features.Users.GetUser;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales;
 
@@ -87,7 +85,7 @@ public class SalesController : BaseController
 
         var query = _mapper.Map<GetSaleQuery>(request);
         var response = await _mediator.Send(query, cancellationToken);
-
+                
         return Ok(new ApiResponseWithData<GetSaleResponse>
         {
             Success = true,
@@ -138,6 +136,7 @@ public class SalesController : BaseController
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateSale([FromRoute] Guid id, [FromBody] UpdateSaleRequest request, CancellationToken cancellationToken)
     {
+        request.Id = id;
         var validator = new UpdateSaleRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
@@ -145,12 +144,13 @@ public class SalesController : BaseController
             return BadRequest(validationResult.Errors);
 
         var command = _mapper.Map<UpdateSaleCommand>(request);
-        command.SaleId = id;
+        command.Id = id;
 
-        await _mediator.Send(command, cancellationToken);
+        var response = await _mediator.Send(command, cancellationToken);
 
-        return Ok(new ApiResponse
+        return Ok(new ApiResponseWithData<UpdateSaleResponse>
         {
+            Data = _mapper.Map<UpdateSaleResponse>(response),
             Success = true,
             Message = "Sale updated successfully"
         });
@@ -163,18 +163,18 @@ public class SalesController : BaseController
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The list of sales</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(ApiResponseWithData<ListSalesResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponseWithData<List<ListSaleResponse>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListSales([FromQuery] ListSalesRequest request, CancellationToken cancellationToken)
     {
-        var query = _mapper.Map<ListSaleQuery>(request);
-        var response = await _mediator.Send(query, cancellationToken);
+        var query = new ListSaleQuery();
+                
+        var response = await _mediator.Send(query, cancellationToken); 
 
-        return Ok(new ApiResponseWithData<ListSalesResponse>
+        return Ok(new ApiResponseWithData<List<ListSaleResponse>>
         {
+            Data = _mapper.Map<List<ListSaleResponse>>(response),
             Success = true,
-            Message = "Sales listed successfully",
-            Data = _mapper.Map<ListSalesResponse>(response)
+            Message = "Sale listed successfully"
         });
     }
 }

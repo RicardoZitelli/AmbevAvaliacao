@@ -1,11 +1,11 @@
-﻿using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
-
-namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
+﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 
 public class UpdateSaleRequest
 {
-    public string SaleNumber { get; set; } = string.Empty;
-    public string Customer { get; set; } = string.Empty;
-    public string Branch { get; set; } = string.Empty;
-    public List<SaleItemRequest> Items { get; set; } = new();
+    public Guid Id { get; set; }
+    public required string SaleNumber { get; set; }
+    public required string Customer { get; set; }
+    public required string Branch { get; set; }
+    public bool IsCancelled { get; set; }
+    public required string UpdatedBy { get; set; }
 }

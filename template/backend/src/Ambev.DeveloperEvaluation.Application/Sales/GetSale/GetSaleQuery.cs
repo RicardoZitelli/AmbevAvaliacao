@@ -1,5 +1,12 @@
-﻿using MediatR;
+﻿using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
+using MediatR;
 
-namespace Ambev.DeveloperEvaluation.Application.Sales.GetSale;
+public class GetSaleQuery : IRequest<GetSaleResult>
+{
+    public Guid SaleId { get; set; }
 
-public record GetSaleQuery(Guid SaleId) : IRequest<GetSaleResult>;
+    public GetSaleQuery(Guid saleId)
+    {
+        SaleId = saleId;
+    }
+}

@@ -11,6 +11,6 @@ public class CreateSaleProfile : Profile
     public CreateSaleProfile()
     {
         CreateMap<CreateSaleRequest, CreateSaleCommand>();
-        CreateMap<CreateSaleResponse, Application.Sales.CreateSale.CreateSaleResult>();
+        CreateMap<CreateSaleResponse, CreateSaleResult>();
     }
 }

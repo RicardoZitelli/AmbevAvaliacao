@@ -1,9 +1,11 @@
-﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
+﻿using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
+
+namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 
 /// <summary>
-/// Response model for getting a sale.
+/// Response model for the UpdateSale operation.
 /// </summary>
-public class GetSaleResponse
+public class UpdateSaleResponse
 {
     /// <summary>
     /// The unique identifier of the sale.
